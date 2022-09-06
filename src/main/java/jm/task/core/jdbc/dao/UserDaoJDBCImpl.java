@@ -17,7 +17,7 @@ public class UserDaoJDBCImpl implements UserDao {
                 PRIMARY KEY (`id`),
                 UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE);""";
     private final static String ADD_USER = "INSERT INTO users(name, lastname, age) VALUES(?, ?, ?)";
-    private final static String GET_ALL_USERS = "SELECT * FROM users";
+    private final static String GET_ALL_USERS = "SELECT name, lastname, age FROM users";
     private final static String REMOVE_BY_ID = "DELETE FROM users WHERE id = ?";
     private final static String CLEAN_TABLE = "TRUNCATE TABLE users";
     private final static String DROP_TABLE = "DROP TABLE IF EXISTS users";
@@ -81,9 +81,9 @@ public class UserDaoJDBCImpl implements UserDao {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        for (User u: userList) {
-            System.out.println(u.toString());
-        }
+//        for (User u: userList) {
+//            System.out.println(u.toString());
+//        }
         return userList;
     }
 
