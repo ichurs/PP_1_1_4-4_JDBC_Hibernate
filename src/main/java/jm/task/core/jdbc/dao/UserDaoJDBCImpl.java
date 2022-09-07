@@ -3,6 +3,7 @@ package jm.task.core.jdbc.dao;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 
+import javax.persistence.Entity;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,7 @@ public class UserDaoJDBCImpl implements UserDao {
                 PRIMARY KEY (`id`),
                 UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE);""";
     private final static String ADD_USER = "INSERT INTO users(name, lastname, age) VALUES(?, ?, ?)";
-    private final static String GET_ALL_USERS = "SELECT name, lastname, age FROM users";
+    private final static String GET_ALL_USERS = "SELECT id, name, lastname, age FROM users";
     private final static String REMOVE_BY_ID = "DELETE FROM users WHERE id = ?";
     private final static String CLEAN_TABLE = "TRUNCATE TABLE users";
     private final static String DROP_TABLE = "DROP TABLE IF EXISTS users";
@@ -30,6 +31,7 @@ public class UserDaoJDBCImpl implements UserDao {
     public void createUsersTable(){
         try (Connection connection = Util.getConnection()) {
             preparedStatement = connection.prepareStatement(CREATE_TABLE);
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -38,6 +40,7 @@ public class UserDaoJDBCImpl implements UserDao {
     public void dropUsersTable() {
         try (Connection connection = Util.getConnection()) {
             preparedStatement = connection.prepareStatement(DROP_TABLE);
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -72,6 +75,7 @@ public class UserDaoJDBCImpl implements UserDao {
             ResultSet resultSet = statement.executeQuery(GET_ALL_USERS);
             while (resultSet.next()) {
                 User user = new User();
+                user.setId(resultSet.getLong("id"));
                 user.setName(resultSet.getString("name"));
                 user.setLastName(resultSet.getString("lastname"));
                 user.setAge(resultSet.getByte("age"));
@@ -79,9 +83,6 @@ public class UserDaoJDBCImpl implements UserDao {
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        }
-        for (User u: userList) {
-            System.out.println(u.toString());
         }
         return userList;
     }

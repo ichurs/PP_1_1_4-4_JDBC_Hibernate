@@ -2,6 +2,7 @@ package jm.task.core.jdbc;
 
 import jm.task.core.jdbc.dao.UserDao;
 import jm.task.core.jdbc.dao.UserDaoJDBCImpl;
+import jm.task.core.jdbc.model.User;
 
 public class Main {
     public static void main(String[] args) {
@@ -15,7 +16,9 @@ public class Main {
         userDao.saveUser("Name4", "LastName4", (byte) 38);
 
         userDao.removeUserById(1);
-        userDao.getAllUsers();
+        for (User u: userDao.getAllUsers()) {
+            System.out.println(u.toString());
+        }
         userDao.cleanUsersTable();
         userDao.dropUsersTable();
     }
