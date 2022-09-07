@@ -10,7 +10,7 @@ import java.util.List;
 public class UserDaoJDBCImpl implements UserDao {
     private final static String CREATE_TABLE = """
             CREATE TABLE IF NOT EXISTS `1_1_3_ichurs`.`users` (
-                `id` INT NOT NULL AUTO_INCREMENT,
+                `id` BIGINT(19) NOT NULL AUTO_INCREMENT,
                 `name` VARCHAR(45) NULL DEFAULT NULL,
                 `lastname` VARCHAR(45) NULL DEFAULT NULL,
                 `age` INT NULL DEFAULT NULL,
@@ -44,12 +44,11 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void saveUser(String name, String lastName, byte age) {
-        User user = new User(name, lastName, age);
         try (Connection connection = Util.getConnection()) {
             preparedStatement = connection.prepareStatement(ADD_USER);
-            preparedStatement.setString(1, user.getName());
-            preparedStatement.setString(2, user.getLastName());
-            preparedStatement.setByte(3, user.getAge());
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, lastName);
+            preparedStatement.setByte(3, age);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -81,9 +80,9 @@ public class UserDaoJDBCImpl implements UserDao {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-//        for (User u: userList) {
-//            System.out.println(u.toString());
-//        }
+        for (User u: userList) {
+            System.out.println(u.toString());
+        }
         return userList;
     }
 
