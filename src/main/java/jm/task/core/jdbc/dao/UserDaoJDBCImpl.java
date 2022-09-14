@@ -3,7 +3,6 @@ package jm.task.core.jdbc.dao;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 
-import javax.persistence.Entity;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +33,12 @@ public class UserDaoJDBCImpl implements UserDao {
         try (Connection connection = Util.getConnection()) {
             preparedStatement = connection.prepareStatement(CREATE_TABLE);
             preparedStatement.executeUpdate();
+            connection.setAutoCommit(false);
+            try {
+                connection.commit();
+            } catch (SQLException e) {
+                connection.rollback();
+            }
         } catch (SQLException e) {
             logger.log(Level.WARNING, "Failed create table");
         }
@@ -43,6 +48,12 @@ public class UserDaoJDBCImpl implements UserDao {
         try (Connection connection = Util.getConnection()) {
             preparedStatement = connection.prepareStatement(DROP_TABLE);
             preparedStatement.executeUpdate();
+            connection.setAutoCommit(false);
+            try {
+                connection.commit();
+            } catch (SQLException e) {
+                connection.rollback();
+            }
         } catch (SQLException e) {
             logger.log(Level.WARNING, "Failed drop table");
         }
@@ -55,6 +66,12 @@ public class UserDaoJDBCImpl implements UserDao {
             preparedStatement.setString(2, lastName);
             preparedStatement.setByte(3, age);
             preparedStatement.executeUpdate();
+            connection.setAutoCommit(false);
+            try {
+                connection.commit();
+            } catch (SQLException e) {
+                connection.rollback();
+            }
         } catch (SQLException e) {
             logger.log(Level.WARNING, "Failed save user");
         }
@@ -65,6 +82,12 @@ public class UserDaoJDBCImpl implements UserDao {
             preparedStatement = connection.prepareStatement(REMOVE_BY_ID);
             preparedStatement.setLong(1, id);
             preparedStatement.executeUpdate();
+            connection.setAutoCommit(false);
+            try {
+                connection.commit();
+            } catch (SQLException e) {
+                connection.rollback();
+            }
         } catch (SQLException e) {
             logger.log(Level.WARNING, "Failed remove user");
         }
@@ -83,6 +106,12 @@ public class UserDaoJDBCImpl implements UserDao {
                 user.setAge(resultSet.getByte("age"));
                 userList.add(user);
             }
+            connection.setAutoCommit(false);
+            try {
+                connection.commit();
+            } catch (SQLException e) {
+                connection.rollback();
+            }
         } catch (SQLException e) {
             logger.log(Level.WARNING, "Failed get list of users");
         }
@@ -93,6 +122,12 @@ public class UserDaoJDBCImpl implements UserDao {
         try (Connection connection = Util.getConnection()) {
             preparedStatement = connection.prepareStatement(CLEAN_TABLE);
             preparedStatement.executeUpdate();
+            connection.setAutoCommit(false);
+            try {
+                connection.commit();
+            } catch (SQLException e) {
+                connection.rollback();
+            }
         } catch (SQLException e) {
             logger.log(Level.WARNING, "Failed clean table");
         }
