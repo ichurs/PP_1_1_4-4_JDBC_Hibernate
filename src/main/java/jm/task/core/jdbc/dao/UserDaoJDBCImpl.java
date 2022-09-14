@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class UserDaoJDBCImpl implements UserDao {
     private final static String CREATE_TABLE = """
@@ -23,17 +25,17 @@ public class UserDaoJDBCImpl implements UserDao {
     private final static String CLEAN_TABLE = "TRUNCATE TABLE users";
     private final static String DROP_TABLE = "DROP TABLE IF EXISTS users";
     private PreparedStatement preparedStatement;
+    Logger logger = Logger.getLogger(UserDaoJDBCImpl.class.getName());
 
     public UserDaoJDBCImpl() {
-
-    }
+        }
 
     public void createUsersTable(){
         try (Connection connection = Util.getConnection()) {
             preparedStatement = connection.prepareStatement(CREATE_TABLE);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            logger.log(Level.WARNING, "Failed create table");
         }
     }
 
@@ -42,7 +44,7 @@ public class UserDaoJDBCImpl implements UserDao {
             preparedStatement = connection.prepareStatement(DROP_TABLE);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            logger.log(Level.WARNING, "Failed drop table");
         }
     }
 
@@ -54,7 +56,7 @@ public class UserDaoJDBCImpl implements UserDao {
             preparedStatement.setByte(3, age);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            logger.log(Level.WARNING, "Failed save user");
         }
     }
 
@@ -64,7 +66,7 @@ public class UserDaoJDBCImpl implements UserDao {
             preparedStatement.setLong(1, id);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            logger.log(Level.WARNING, "Failed remove user");
         }
     }
 
@@ -82,7 +84,7 @@ public class UserDaoJDBCImpl implements UserDao {
                 userList.add(user);
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            logger.log(Level.WARNING, "Failed get list of users");
         }
         return userList;
     }
@@ -92,7 +94,7 @@ public class UserDaoJDBCImpl implements UserDao {
             preparedStatement = connection.prepareStatement(CLEAN_TABLE);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            logger.log(Level.WARNING, "Failed clean table");
         }
     }
 }
