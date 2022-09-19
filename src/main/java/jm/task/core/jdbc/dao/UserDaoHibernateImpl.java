@@ -1,8 +1,12 @@
 package jm.task.core.jdbc.dao;
 
 import jm.task.core.jdbc.model.User;
-
+import jm.task.core.jdbc.util.Util;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class UserDaoHibernateImpl implements UserDao {
     private final static String CREATE_TABLE = """
@@ -13,44 +17,101 @@ public class UserDaoHibernateImpl implements UserDao {
                 `age` INT NULL DEFAULT NULL,
                 PRIMARY KEY (`id`),
                 UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE);""";
-    private final static String ADD_USER = "INSERT INTO users(name, lastname, age) VALUES(?, ?, ?)";
-    private final static String GET_ALL_USERS = "SELECT id, name, lastname, age FROM users";
-    private final static String REMOVE_BY_ID = "DELETE FROM users WHERE id = ?";
-    private final static String CLEAN_TABLE = "TRUNCATE TABLE users";
     private final static String DROP_TABLE = "DROP TABLE IF EXISTS users";
+    private final SessionFactory sessionFactory;
+    Logger logger = Logger.getLogger(UserDaoJDBCImpl.class.getName());
 
     public UserDaoHibernateImpl() {
-
+        sessionFactory = Util.getSessionFactory();
     }
 
 
     @Override
     public void createUsersTable() {
-
+        try (Session session = sessionFactory.getCurrentSession()) {
+            session.beginTransaction();
+            session.createSQLQuery(CREATE_TABLE).executeUpdate();
+            session.getTransaction().commit();
+            if (session.getTransaction() != null) {
+                session.getTransaction().rollback();
+            }
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Failed create table");
+        }
     }
 
     @Override
     public void dropUsersTable() {
-
+        try (Session session = sessionFactory.getCurrentSession()) {
+            session.beginTransaction();
+            session.createSQLQuery(DROP_TABLE).executeUpdate();
+            session.getTransaction().commit();
+            if (session.getTransaction() != null) {
+                session.getTransaction().rollback();
+            }
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Failed drop table");
+        }
     }
 
     @Override
     public void saveUser(String name, String lastName, byte age) {
-
+        User user = new User(name, lastName, age);
+        try (Session session = sessionFactory.getCurrentSession()) {
+            session.beginTransaction();
+            session.save(user);
+            session.getTransaction().commit();
+            if (session.getTransaction() != null) {
+                session.getTransaction().rollback();
+            }
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Failed save user");
+        }
     }
 
     @Override
     public void removeUserById(long id) {
-
+        try (Session session = sessionFactory.getCurrentSession()) {
+            session.beginTransaction();
+            User user = session.get(User.class, id);
+            session.delete(user);
+            session.getTransaction().commit();
+            if (session.getTransaction() != null) {
+                session.getTransaction().rollback();
+            }
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Failed remove user");
+        }
     }
 
     @Override
     public List<User> getAllUsers() {
-        return null;
+        List<User> userList = null;
+        try (Session session = sessionFactory.getCurrentSession()) {
+            session.beginTransaction();
+            userList = session.createQuery("from User", User.class).getResultList();
+            session.getTransaction().commit();
+            if (session.getTransaction() != null) {
+                session.getTransaction().rollback();
+            }
+            return userList;
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Failed get list of users");
+        }
+        return userList;
     }
 
     @Override
     public void cleanUsersTable() {
-
+        try (Session session = sessionFactory.getCurrentSession()) {
+            session.beginTransaction();
+            session.createQuery("delete User").executeUpdate();
+            session.getTransaction().commit();
+            if (session.getTransaction() != null) {
+                session.getTransaction().rollback();
+            }
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Failed clean table");
+        }
     }
 }
