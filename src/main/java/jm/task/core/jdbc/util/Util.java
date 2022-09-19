@@ -15,7 +15,6 @@ public class Util {
     private static final String URL = "jdbc:mysql://localhost:3306/1_1_3_ichurs";
     private static final String USERNAME = "root";
     private static final String PASSWORD = "root";
-    private static final String DRIVER = "com.mysql.jdbc.Driver";
     private static final String DIALECT = "org.hibernate.dialect.MySQLDialect";
     private static SessionFactory sessionFactory;
 
@@ -33,7 +32,6 @@ public class Util {
         if (sessionFactory == null) {
             Configuration config = new Configuration();
             Properties properties = new Properties();
-            properties.put(Environment.DRIVER, DRIVER);
             properties.put(Environment.DIALECT, DIALECT);
             properties.put(Environment.URL, URL);
             properties.put(Environment.USER, USERNAME);
