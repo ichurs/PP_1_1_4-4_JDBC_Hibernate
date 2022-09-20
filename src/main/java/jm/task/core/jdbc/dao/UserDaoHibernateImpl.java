@@ -19,12 +19,12 @@ public class UserDaoHibernateImpl implements UserDao {
                 UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE);""";
     private final static String DROP_TABLE = "DROP TABLE IF EXISTS users";
     private final SessionFactory sessionFactory;
+    private Session session = null;
     Logger logger = Logger.getLogger(UserDaoJDBCImpl.class.getName());
 
     public UserDaoHibernateImpl() {
         sessionFactory = Util.getSessionFactory();
     }
-
 
     @Override
     public void createUsersTable() {
@@ -32,10 +32,10 @@ public class UserDaoHibernateImpl implements UserDao {
             session.beginTransaction();
             session.createSQLQuery(CREATE_TABLE).executeUpdate();
             session.getTransaction().commit();
+        } catch (Exception e) {
             if (session.getTransaction() != null) {
                 session.getTransaction().rollback();
             }
-        } catch (Exception e) {
             logger.log(Level.WARNING, "Failed create table");
         }
     }
@@ -46,10 +46,10 @@ public class UserDaoHibernateImpl implements UserDao {
             session.beginTransaction();
             session.createSQLQuery(DROP_TABLE).executeUpdate();
             session.getTransaction().commit();
+        } catch (Exception e) {
             if (session.getTransaction() != null) {
                 session.getTransaction().rollback();
             }
-        } catch (Exception e) {
             logger.log(Level.WARNING, "Failed drop table");
         }
     }
@@ -61,11 +61,11 @@ public class UserDaoHibernateImpl implements UserDao {
             session.beginTransaction();
             session.save(user);
             session.getTransaction().commit();
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Failed save user");
             if (session.getTransaction() != null) {
                 session.getTransaction().rollback();
             }
-        } catch (Exception e) {
-            logger.log(Level.WARNING, "Failed save user");
         }
     }
 
@@ -76,10 +76,10 @@ public class UserDaoHibernateImpl implements UserDao {
             User user = session.get(User.class, id);
             session.delete(user);
             session.getTransaction().commit();
+        } catch (Exception e) {
             if (session.getTransaction() != null) {
                 session.getTransaction().rollback();
             }
-        } catch (Exception e) {
             logger.log(Level.WARNING, "Failed remove user");
         }
     }
